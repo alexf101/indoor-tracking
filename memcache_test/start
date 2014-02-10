@@ -1,0 +1,2 @@
+delete testkey
+set testkey 0 900 1000

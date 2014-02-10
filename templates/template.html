@@ -1,0 +1,40 @@
+{% load staticfiles %}
+<html>
+<head>
+    <title>Fingerprints Collector</title>
+    <link rel="stylesheet" type="text/css" href="{% static "main.css" %}">
+    {% block scripts %}{% endblock %}
+</head>
+<body>
+<div id="container">
+    <div id="header">
+    <h1>
+        Fingerprints Collector
+    </h1>
+    </div>
+	<div id="navigation">
+		<ul>
+			<li><a href="{% url 'home' %}">Home</a></li>
+			<li><a href="{% url 'how_to_use_api' %}">API Usage</a></li>
+			<li><a href="{% url 'api-documentation' %}">API Docs</a></li>
+			<li><a href="{% url 'client_libs' %}">Client libraries</a></li>
+			<li><a href="{% url 'applications' %}">Applications</a></li>
+			<li><a href="{% url 'contact' %}">Contact us</a></li>
+		</ul>
+	</div>
+	<div id="content">
+
+        {% block content %}
+            Empty page.
+        {% endblock %}
+
+    </div>
+
+    <div id="footer">
+        {% block footer %}
+            Authored by Alex Finkel in 2013. Contact afinkel@student.unimelb.edu.au for bug reports and enquiries.
+        {% endblock %}
+    </div>
+</div>
+</body>
+</html>

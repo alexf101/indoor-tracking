@@ -1,0 +1,22 @@
+-r cpython_backend.txt
+# Miscellaneous libraries
+requests
+# scikit-learn requirements
+# if numpy fails, try installing it separately, i.e. sudo pip install numpy
+numpy
+scipy
+scikit-learn
+# Django requirements
+python-daemon
+lockfile
+South
+python-memcached
+# djangorestframework requirements
+# if pip doesn't work for Markdown try easy_install... it happened once!
+Markdown>=2.1.0
+django-filter>=0.5.4
+django-oauth-plus>=2.0
+oauth2>=1.5.211
+django-oauth2-provider>=0.2.3
+djangorestframework
+django-rest-framework-docs

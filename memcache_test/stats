@@ -1,0 +1,1 @@
+echo 'stats settings' | nc localhost 11211 | grep 'max' | grep 'te'

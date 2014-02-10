@@ -1,0 +1,37 @@
+{% extends 'template.html' %}
+{% block content %}
+    <h2>
+        Welcome to Fingerprints Collector!
+    </h2>
+
+    {% if msg != None%}
+        <h2 class="msg">{{ msg }}</h2>
+    {% endif %}
+    <p>
+        Fingerprints Collector helps you record, organise and access wifi RSSIs and magnetic fields.
+    </p><p>
+    As well as providing a data corpus to use for research, you can use this website
+    to track devices that can record wifi RSSI using our REST API.
+</p><p>
+    <a href="/media/code/android.zip">You can get an Android library to facilitate collecting data and using our API here.</a>
+</p><p>
+    Everyone, including you, can see and use the data available. If you upload data,
+    you (and only you) will be able to edit or delete it later.
+</p><p>
+    If you do use our data for a scientific publication, please remember to cite
+</p><p>
+    Finkel, A, Harwood, A. (2013, June). A cross-platform web service and data corpus for using WiFi RSSI and magnetic field fingerprints. <i>In An Appropriate and Well-Respected Journal </i>(pp. 1-6).
+    <a onclick='document.getElementById("bibtex").style.display="block";'>Click here to show the BibTex</a>
+    <div id="bibtex" style="display: none;">
+    <pre>
+@incollection{finkel2013fingerprints,
+  title={A cross-platform web service and data corpus for using WiFi RSSI and magnetic field fingerprints},
+  author={Finkel, Alex and Harwood, Aaron},
+  booktitle={An Appropriate and Well-Respected Journal},
+  pages={1--6},
+  year={2013},
+  publisher={SomePublisher}
+}
+    </pre></div>
+
+{% endblock %}

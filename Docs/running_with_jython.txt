@@ -1,0 +1,39 @@
+So we want to run with Jython in order to leverage the capacity to write extensions in Java / use 3rd party Java classes, specifically Weka.
+
+A good alternative would be to just use a CPython SVM :)
+
+But challenge accepted...
+
+So, the main problem is picking the right versions of software, and the fact that the rest_framework plug-in isn't entirely Jython compatible.
+
+For starters, use the jyton_backend.txt requirements to get the right versions.
+
+You must use the Jython2.7 beta.
+
+Ensure that the environment variable 'CLASSPATH' is set to include all necessary jars including mysql driver (no other option seems to work).
+
+export CLASSPATH='/home/alex/workspace/Masters/Fingerprints_django/mysql-connector-java-5.1.24-bin.jar'
+
+Change:
+
+/usr/share/jython2.7b1/Lib/site-packages/rest_framework/templatetags/rest_framework.py:239
+
+uncomment the following lines (no 'idna' support in Jython yet):
+                #try:
+                #    domain = domain.encode('idna').decode('ascii')
+                #except UnicodeError:
+                #    continue
+
+Change:
+
+/usr/share/jython2.7b1/Lib/site-packages/django_filters/__init__.py
+
+Remove the '.' from the first line
+
+May have been something else too....
+
+Ah bugger.
+
+More errors.
+
+Giving up for now - what a waste of time!

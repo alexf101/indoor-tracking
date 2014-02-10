@@ -1,0 +1,230 @@
+{% extends 'template.html' %}
+{% load staticfiles %}
+{% block scripts %}
+<script type="text/JavaScript" src="{% static "jquery-1.10.2.min.js" %}"></script>
+<script>
+    $(function () {
+        var newLine, el, title, link, ToC, container;
+        container = $("#content");
+        ToC =
+                "<nav role='navigation' class='table-of-contents'>" +
+                        "<h2>Contents</h2>" +
+                        "<ul>";
+
+        container.find("h2").each(function () {
+            el = $(this);
+            title = el.text();
+            link = "#" + el.attr("id");
+
+            newLine =
+                    "<li>" +
+                            "<a href='" + link + "'>" +
+                            title +
+                            "</a>" +
+                            "</li>";
+
+            ToC += newLine;
+        });
+        ToC +=
+                "</ul>" +
+                        "</nav>";
+        container.prepend(ToC);
+    });
+</script>
+{% endblock %}
+{% block content %}
+
+    <h2 id="preamble">Preamble</h2>
+    <p>
+        'Fingerprints' refer to a wireless signal signature recorded at a particular time or place, that can
+        (hopefully!)
+        be used to uniquely identify a location.
+    </p>
+    <p>
+        The idea of this page is to give you an idea about how the API holds together, how to query the API, and where
+        to go to get more
+        specific information. The actual message parameters can be found at the <a href="{% url 'api-documentation' %}">api-docs</a>.
+    </p>
+    <p>
+        What you won't find here: anything about mapping. This API is intended to be quite low-level, and therefore
+        flexible. While we map locations to their fingerprints, our 'locations' aren't required to be associated with
+        a point on a map. Such concepts may enter the API in the future, but they'll never be core. It may be better
+        conceptually to refer to our locations as 'points of interest', to which proximity can be determined.
+    </p>
+    <h2 id="entities">Entities</h2>
+    <p>
+        The API uses 6 entities for reasoning about fingerprints:
+    <ul>
+        <li><a href="#building">Building</a></li>
+        <li><a href="#location">Location</a></li>
+        <li><a href="#device">Device</a></li>
+        <li><a href="#base_station">Base station</a></li>
+        <li><a href="#scan">Scan</a></li>
+        <li><a href="#fingerprints">Fingerprint</a></li>
+    </ul>
+    In addition, there are 2 entities for managing who has the right to do what:
+    <ul>
+        <li>User</li>
+        <li>Group</li>
+    </ul>
+    </p>
+    <h3><a name="fingerprints"/>Fingerprints</h3>
+    <p>
+        Fingerprints represent a signal recording at a particular place and time, according to a particular device.
+
+        The data is in a list of scans, and in three magnetic field properties:
+    <ul>
+        <li>the magnitude of the field strength,</li>
+        <li>the z-axis component (pointing away from the Earth),</li>
+        <li>and the compass heading of the device.</li>
+    </ul>
+    </p>
+    <h3><a name="scans"/>Scans</h3>
+    <p>
+        Scans associate a base station with a fingerprint and RSSI level.
+    </p>
+
+    <h3><a name="base_station"/>Base stations</h3>
+    <p>
+        Base stations represent a single WiFi access point. Manufacturer and model are optional (may be useful for
+        assessing which models are best for fingerprint tracking).
+    </p>
+    <h3><a name="device"/>Devices</h3>
+    <p>
+        Mobile phones or other devices that can be used to record a fingerprint.
+    </p>
+    <h3><a name="location"/>Locations</h3>
+    <p>
+        Locations are simply names for places in buildings. There is no physical mapping data as of yet.
+
+        E.g. 'dining room', 'picasso_3', or 'audi_exhibit' might be good names for locations.
+    </p>
+    <h3><a name="building"/>Buildings</h3>
+    <p>
+        Buildings serve to associate a bunch of locations together. They don't necessarily have to be a physical
+        building,
+        though that's the obvious use case! We anticipate that a lot of apps will be specific to a single physical area,
+        so specifying building in your queries is a powerful way to isolate your data from the crowd's.
+    </p>
+    <h2 id="queries">Querying entities</h2>
+    <p>
+        This API uses the Django framework, and we pass on some of the awesome flexibility and simplicity of Django's
+        query language to you.
+    </p>
+    <p>
+        All of our entities support filtering through a GET query string (when retrieving lists of entities).
+    </p>
+    <p>
+        For example, let's say you are interested in analysing the consistency of the RSSI of base stations when they
+        can only be weakly detected. Therefore, you want to retrieve all of the scans performed that have a level
+        between -95 and -85, over a period of one week.
+    </p>
+    <p>
+        <a href="/api/scans/?level__gt=-95&level__lt=-80&fingerprint__timestamp__gt=2013-05-1&fingerprint__timestamp__lt=2013-05-7">
+            /api/scans/?level__gt=-95&level__lt=-80&fingerprint__timestamp__gt=2013-05-1&fingerprint__timestamp__lt=2013-05-7
+        </a>
+    </p>
+    <p>
+        Each key begins with a field on the model. You can find out what fields
+        are available by having a look at <a href="{% url 'api-documentation' %}">the API docs</a>.
+    </p>
+    <p>
+        The double underscores represent either special functions, like 'gt' or 'lt' for 'greater-than' or 'less-than',
+        or fields on a related model (like 'fingerprint__timestamp'). Again, you can discover the related model's fields
+        using the api documentation. There's no limit on how deep you can traverse the models - for example, to get all
+        scans
+        in a building named "123 ABC Street" done by user with username "ABC street resident" you could structure a URL
+        like the following:
+    <pre>/api/scans/?
+            fingerprint__location__building__name=
+                123+ABC+Street
+            &
+            fingerprint__owner__username=
+                ABC+street+resident
+        </pre>
+    </p>
+    <p>
+        For those interested, you can find a much more <a
+            href="https://docs.djangoproject.com/en/1.5/ref/models/querysets/#id4" target="_blank">thorough explanation
+        of field lookups
+        in Django's
+        documentation</a>.
+    </p>
+    <p>
+        In addition to field lookups, we also allow:
+    <table id="api_query_params_table">
+        <tr>
+            <th>Function</th>
+            <th>Description</th>
+            <th>Example</th>
+        </tr>
+        <tr>
+            <td>order_by</td>
+            <td>use with the desired field name as a value to order the results.</td>
+            <td>To get top 10 scans ordered by level, use <br>
+                <a href="/api/scans/?order_by=level&limit=10">/api/scans/?order_by=level&limit=10</a>
+                <br>
+                Use a negative value to represent descending order <br>
+                <a href="/api/scans/?order_by=-level&limit=10">/api/scans/?order_by=-level&limit=10</a>
+            </td>
+        </tr>
+        <tr>
+            <td>limit</td>
+            <td>Use with a number to limit the number of results returned.</td>
+            <td>
+                Gets five most recent fingerprints submitted <br>
+                <a href="/api/fingerprints/?limit=5&order_by=-timestamp">/api/fingerprints/?limit=5&order_by=-timestamp</a>
+            </td>
+        </tr>
+        <tr>
+            <td>distinct</td>
+            <td>Use with no value to get only unique results. Typically used in conjunction with 'values'</td>
+            <td>
+                Gets all SSIDs encountered <br>
+                <a href="/api/base_stations/?values=ssid&distinct">/api/base_stations/?values=ssid&distinct</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                values
+            </td>
+            <td>
+                Use with the name of a field to get only that field back (like an SQL SELECT clause). This key may be
+                used multiple times in a single query to return multiple fields.
+            </td>
+            <td>
+                Gets all pairs of SSIDs and frequencies <br>
+                <a href="/api/base_stations/?values=ssid&values=frequency&distinct">/api/base_stations/?values=ssid&values=frequency&distinct</a>
+            </td>
+        </tr>
+    </table>
+    <h2 id="findlocation">Find your location!</h2>
+    <p>
+        POST a fingerprint to <a href="{% url 'retrieve_my_location' %}">{% url 'retrieve_my_location' %}</a> in order
+        to have our server guess your location using a machine learning algorithm. The algorithm used at the moment
+        is an SVM (libsvm via Scikit-learn) but we are probably switching to the <a
+            href="http://link.springer.com.ezp.lib.unimelb.edu.au/chapter/10.1007/978-3-642-04385-7_13" target="_blank">'WASP'
+        algorithm</a> in future.
+    </p>
+    <h2 id="formats">Supported message formats</h2>
+    <p>
+        You can use JSON or XML messages.
+    </p>
+    <h2 id="authentication">Authentication</h2>
+    <p>
+        Authentication is done through basic HTTP authentication, or through logging in to the website.
+
+        You don't have to be authenticated to create a new user, so that should be your first step.
+    </p>
+    <h2 id="download_data">Download data as CSV</h2>
+    <p>
+        If you want to try out your own algorithms, you can download datasets for any of the buildings in our database by using the following url:
+        </p><p>
+        http://www.fingerprinttracker.com/api/getCSV/?building=Your+Building+Name
+        </p><p>
+        Remember, to get a list of building names, you can try
+        </p><p>
+        <a href="api/buildings/?values=name">http://www.fingerprinttracker.com/api/buildings/?values=name</a>
+        </p><p>
+    </p>
+{% endblock %}

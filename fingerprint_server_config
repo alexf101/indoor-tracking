@@ -1,0 +1,26 @@
+server {
+    listen          80 default_server;
+ 
+    root            /home/ubuntu/fingerprints_server/static;
+
+    location / {
+        # try_files attempts to serve a file or folder, until it reaches the fallback at the end
+        try_files $uri @backend;
+    }
+
+    location @backend {
+        # pass anything not matching a static file back to apache
+
+        # proxy_set_header X-Real-IP  $remote_addr;
+        # proxy_set_header X-Forwarded-For $remote_addr;
+        # proxy_set_header Host $host;
+        proxy_pass http://127.0.0.1:8080;
+      }
+
+}
+
+Nginx at front (serves on 80), passes non static files to apache.
+
+Apache serves on 8080, ideally to localhost only.
+ - Change ports.conf
+ - Change sites-enabled/000-default

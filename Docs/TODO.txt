@@ -1,0 +1,11 @@
+Hi me.
+
+Where I'm up to is:
+
+ $ Run South migration to add Owner field to BaseStation
+ $ Check that BaseStations can be edited properly:
+   - if an SSID changes, the change can be put in easily.
+ + Switched to a hyperlinked API.
+ $ Test Fingerprint saving
+   - Understand deserialization using REST framework
+ * Test Location retrieval
